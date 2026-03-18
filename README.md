@@ -50,7 +50,7 @@ ml-interview-prep/
 
 | Dataset | Topic | Notebook | Status |
 |---|---|---|---|
-| Titanic | Missing data, classification baseline | [notebook](eda/titanic/Exploratory_Data_Analysis.ipynb) | ✅ Done |
+| Titanic | Missing data, classification baseline | [notebook](eda/titanic/eda.ipynb) | ✅ Done |
 | House Prices | Regression, skew, multicollinearity | coming soon | 🔜 Week 5 |
 | Telco Churn | Imbalanced classes | coming soon | 🔜 Week 6 |
 | Mall Segmentation | Clustering | coming soon | 🔜 Week 7 |
@@ -71,7 +71,7 @@ ml-interview-prep/
 
 ## 🧪 Titanic — Key Findings
 
-> Full analysis: [eda/titanic/Exploratory_Data_Analysis.ipynb](eda/titanic/Exploratory_Data_Analysis.ipynb)
+> Full analysis: [eda/titanic/Exploratory_Data_Analysis.ipynb](eda/titanic/eda.ipynb)
 
 - **38% survival rate** — imbalanced target; accuracy alone is a misleading metric
 - **Sex is the strongest predictor** — female survival ~74% vs male ~19%
@@ -119,4 +119,4 @@ ml-interview-prep/
 
 ## 📬 Connect
 
-If you're on a similar prep journey, feel free to open an issue or reach out!
+If you're on a similar prep journey, feel free reach out!
