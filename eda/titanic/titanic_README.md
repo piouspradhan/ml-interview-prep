@@ -1,7 +1,7 @@
 # Titanic EDA 🚢
 
 **Dataset:** [Kaggle Titanic](https://www.kaggle.com/c/titanic)
-**Notebook:** [Exploratory_Data_Analysis.ipynb](Exploratory_Data_Analysis.ipynb)
+**Notebook:** [eda.ipynb](eda.ipynb)
 **Study Week:** Week 4 — Feature Engineering & Pipelines
 
 ---
