@@ -71,7 +71,7 @@ ml-interview-prep/
 
 ## 🧪 Titanic — Key Findings
 
-> Full analysis: [eda/titanic/Exploratory_Data_Analysis.ipynb](eda/titanic/eda.ipynb)
+> Full analysis: [eda/titanic/eda.ipynb](eda/titanic/eda.ipynb)
 
 - **38% survival rate** — imbalanced target; accuracy alone is a misleading metric
 - **Sex is the strongest predictor** — female survival ~74% vs male ~19%
