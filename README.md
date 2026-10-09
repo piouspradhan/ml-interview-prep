@@ -68,6 +68,14 @@ ml-interview-prep/
 | Phase 3 | 10–14 | Deep Learning, System Design, Mock Interviews, Capstone |
 
 ---
+## ML Fundamentals Progress
+
+| Topic | Notebook | Status |
+|---|---|---|
+| Linear Regression from Scratch | [notebook](ml-fundamentals/linear-regression-from-scratch.ipynb) | ✅ Done |
+| Linear Regression — Insurance Charges | [notebook](ml-fundamentals/linear-regression-insurance.ipynb) | ✅ Done |
+| Logistic Regression | coming soon | 🔜 |
+| Decision Trees | coming soon | 🔜 |
 
 ## 🧪 Titanic — Key Findings
 

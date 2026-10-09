@@ -1,0 +1,394 @@
+
+<style>
+:root { --c-batch: #185FA5; --c-mini: #0F6E56; --c-sgd: #993C1D; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.section { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; background: var(--color-background-primary); }
+.tabs { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.tab { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.tab.active-batch { background: #E6F1FB; color: #185FA5; border-color: #378ADD; font-weight: 500; }
+.tab.active-mini { background: #E1F5EE; color: #0F6E56; border-color: #1D9E75; font-weight: 500; }
+.tab.active-sgd { background: #FAECE7; color: #993C1D; border-color: #D85A30; font-weight: 500; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 11px; font-weight: 500; margin-left: 6px; }
+.badge-batch { background: #E6F1FB; color: #185FA5; }
+.badge-mini { background: #E1F5EE; color: #0F6E56; }
+.badge-sgd { background: #FAECE7; color: #993C1D; }
+.math-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 13px; color: var(--color-text-primary); line-height: 1.8; margin: 0.75rem 0; }
+.label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.highlight { font-weight: 500; }
+.step-row { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
+.step-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+.step-num-batch { background: #E6F1FB; color: #185FA5; }
+.step-num-mini { background: #E1F5EE; color: #0F6E56; }
+.step-num-sgd { background: #FAECE7; color: #993C1D; }
+.step-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; }
+.metric-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.metric-val { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+.code-block { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; overflow-x: auto; color: var(--color-text-primary); margin: 0.75rem 0; }
+.kw { color: #185FA5; font-weight: 500; }
+.cm { color: var(--color-text-secondary); }
+.str { color: #0F6E56; }
+.num { color: #993C1D; }
+.fn { color: #534AB7; }
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.compare-table th { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-align: left; padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.compare-table td { padding: 8px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; }
+.compare-table tr:last-child td { border-bottom: none; }
+.viz-container { position: relative; width: 100%; height: 220px; }
+.hidden { display: none; }
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 0.5rem 0; }
+.slider-row label { font-size: 12px; color: var(--color-text-secondary); width: 90px; flex-shrink: 0; }
+.slider-row span { font-size: 12px; font-weight: 500; min-width: 32px; color: var(--color-text-primary); }
+.run-btn { padding: 7px 18px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 13px; cursor: pointer; background: var(--color-background-secondary); color: var(--color-text-primary); margin-top: 8px; }
+.run-btn:hover { background: var(--color-background-primary); }
+.loss-display { font-size: 13px; color: var(--color-text-secondary); margin-top: 6px; }
+.loss-val { font-weight: 500; color: var(--color-text-primary); }
+</style>
+
+<div style="padding: 0.5rem 0;">
+
+<div class="tabs">
+  <button class="tab active-batch" onclick="showTab('batch', this)">Batch GD</button>
+  <button class="tab" onclick="showTab('mini', this)">Mini-Batch GD</button>
+  <button class="tab" onclick="showTab('sgd', this)">Stochastic GD</button>
+  <button class="tab" onclick="showTab('compare', this)">Compare all</button>
+  <button class="tab" onclick="showTab('sim', this)">Live simulation</button>
+</div>
+
+<!-- ═══════════════════════════ BATCH ═══════════════════════════ -->
+<div id="tab-batch">
+  <div class="section">
+    <div class="label">the dataset <span class="badge badge-batch">m = 6 samples</span></div>
+    <div class="math-box">
+      X = [1, 2, 3, 4, 5, 6]  ← house sizes (hundreds sqft)<br>
+      y = [2, 4, 5, 4, 5, 6]  ← prices ($100k)<br>
+      θ = 0.0  ← initial weight (single feature, no bias for simplicity)<br>
+      α = 0.01 ← learning rate
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">the update rule — batch uses ALL m samples every step</div>
+    <div class="math-box">
+      <span class="highlight">Gradient =</span> (1/m) × Σᵢ (θxᵢ - yᵢ) × xᵢ<br>
+      <span class="highlight">θ_new    =</span> θ - α × Gradient
+    </div>
+
+    <div class="label" style="margin-top:1rem;">step-by-step iteration 1</div>
+    <div class="step-row"><div class="step-num step-num-batch">1</div><div class="step-text">compute prediction for every sample: ŷᵢ = θ × xᵢ = 0×xᵢ = 0 for all i</div></div>
+    <div class="step-row"><div class="step-num step-num-batch">2</div><div class="step-text">compute error for each: (ŷᵢ - yᵢ) = [−2, −4, −5, −4, −5, −6]</div></div>
+    <div class="step-row"><div class="step-num step-num-batch">3</div><div class="step-text">multiply each error by xᵢ: [−2, −8, −15, −16, −25, −36]</div></div>
+    <div class="step-row"><div class="step-num step-num-batch">4</div><div class="step-text">sum and average: Gradient = (−2−8−15−16−25−36)/6 = −102/6 = −17.0</div></div>
+    <div class="step-row"><div class="step-num step-num-batch">5</div><div class="step-text">update: θ = 0.0 − 0.01 × (−17.0) = <strong>0.17</strong></div></div>
+    <div class="step-row"><div class="step-num step-num-batch">6</div><div class="step-text">repeat with new θ until convergence</div></div>
+  </div>
+
+  <div class="section">
+    <div class="label">code</div>
+    <div class="code-block">
+<span class="kw">import</span> numpy <span class="kw">as</span> np<br><br>
+X = np.array([<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>], dtype=float)<br>
+y = np.array([<span class="num">2</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>], dtype=float)<br>
+theta, alpha, m = <span class="num">0.0</span>, <span class="num">0.01</span>, len(X)<br><br>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;predictions = theta * X          <span class="cm"># (m,) — uses ALL samples</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;errors      = predictions - y     <span class="cm"># (m,)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;gradient    = (<span class="num">1</span>/m) * np.<span class="fn">dot</span>(errors, X)  <span class="cm"># scalar</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;theta       = theta - alpha * gradient<br><br>
+<span class="kw">print</span>(<span class="str">f"θ = {theta:.4f}"</span>)  <span class="cm"># → θ ≈ 0.9167</span>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="metric-card"><div class="metric-label">samples per update</div><div class="metric-val" style="color:#185FA5;">all 6</div></div>
+    <div class="metric-card"><div class="metric-label">gradient noise</div><div class="metric-val" style="color:#185FA5;">none</div></div>
+    <div class="metric-card"><div class="metric-label">convergence</div><div class="metric-val" style="color:#185FA5;">smooth</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MINI-BATCH ═══════════════════════ -->
+<div id="tab-mini" class="hidden">
+  <div class="section">
+    <div class="label">same dataset — now split into batches of 2 <span class="badge badge-mini">batch_size = 2</span></div>
+    <div class="math-box">
+      Batch 1: X=[1,2], y=[2,4]<br>
+      Batch 2: X=[3,4], y=[5,4]<br>
+      Batch 3: X=[5,6], y=[5,6]<br>
+      θ=0.0, α=0.01
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">update rule — same formula but only on batch_size samples</div>
+    <div class="math-box">
+      Gradient = (1/batch_size) × Σ_{batch} (θxᵢ - yᵢ) × xᵢ<br>
+      θ_new    = θ - α × Gradient
+    </div>
+
+    <div class="label" style="margin-top:1rem;">epoch 1 — 3 updates happen (one per batch)</div>
+    <div class="step-row"><div class="step-num step-num-mini">1</div><div class="step-text"><strong>Batch 1</strong> — errors: [−2, −4], gradient = (−2×1 + −4×2)/2 = −5.0 → θ = 0 − 0.01×(−5) = 0.05</div></div>
+    <div class="step-row"><div class="step-num step-num-mini">2</div><div class="step-text"><strong>Batch 2</strong> — ŷ=[0.15, 0.20], errors=[−4.85, −3.80], gradient = (−4.85×3 + −3.80×4)/2 = −14.875 → θ = 0.05 + 0.14875 = 0.199</div></div>
+    <div class="step-row"><div class="step-num step-num-mini">3</div><div class="step-text"><strong>Batch 3</strong> — update with samples 5,6 similarly → θ converges faster than Batch GD per epoch</div></div>
+    <div class="step-row"><div class="step-num step-num-mini">4</div><div class="step-text">shuffle dataset, repeat for next epoch</div></div>
+  </div>
+
+  <div class="section">
+    <div class="label">code</div>
+    <div class="code-block">
+<span class="kw">import</span> numpy <span class="kw">as</span> np<br><br>
+X = np.array([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>], dtype=float)<br>
+y = np.array([<span class="num">2</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>], dtype=float)<br>
+theta, alpha, batch_size = <span class="num">0.0</span>, <span class="num">0.01</span>, <span class="num">2</span><br><br>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;idx = np.random.<span class="fn">permutation</span>(len(X))  <span class="cm"># shuffle</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;X_s, y_s = X[idx], y[idx]<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, len(X), batch_size):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Xb = X_s[i:i+batch_size]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;yb = y_s[i:i+batch_size]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grad  = (<span class="num">1</span>/batch_size) * np.<span class="fn">dot</span>(theta*Xb - yb, Xb)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theta = theta - alpha * grad<br><br>
+<span class="kw">print</span>(<span class="str">f"θ = {theta:.4f}"</span>)
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="metric-card"><div class="metric-label">samples per update</div><div class="metric-val" style="color:#0F6E56;">2 (configurable)</div></div>
+    <div class="metric-card"><div class="metric-label">gradient noise</div><div class="metric-val" style="color:#0F6E56;">moderate</div></div>
+    <div class="metric-card"><div class="metric-label">convergence</div><div class="metric-val" style="color:#0F6E56;">fast + stable</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SGD ════════════════════════════ -->
+<div id="tab-sgd" class="hidden">
+  <div class="section">
+    <div class="label">same dataset — one random sample per update <span class="badge badge-sgd">batch_size = 1</span></div>
+    <div class="math-box">
+      Each update uses ONE random sample (xᵢ, yᵢ)<br>
+      θ=0.0, α=0.01
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">update rule — gradient from a single sample only</div>
+    <div class="math-box">
+      Gradient = (θxᵢ - yᵢ) × xᵢ     ← no (1/m) needed, m=1<br>
+      θ_new    = θ - α × Gradient
+    </div>
+
+    <div class="label" style="margin-top:1rem;">epoch 1 — 6 updates (one per sample, shuffled order)</div>
+    <div class="step-row"><div class="step-num step-num-sgd">1</div><div class="step-text"><strong>Sample (x=3, y=5)</strong> picked randomly — error = 0×3−5 = −5, gradient = −5×3 = −15 → θ = 0 − 0.01×(−15) = 0.15</div></div>
+    <div class="step-row"><div class="step-num step-num-sgd">2</div><div class="step-text"><strong>Sample (x=1, y=2)</strong> — ŷ=0.15, error=−1.85, gradient=−1.85 → θ = 0.15 + 0.0185 = 0.1685</div></div>
+    <div class="step-row"><div class="step-num step-num-sgd">3</div><div class="step-text">continue for remaining 4 samples — each update is very fast but noisy</div></div>
+    <div class="step-row"><div class="step-num step-num-sgd">4</div><div class="step-text">path to minimum is <strong>zigzag</strong> — noisy gradient can jump over saddle points (helpful!) but also oscillates near minimum</div></div>
+  </div>
+
+  <div class="section">
+    <div class="label">code</div>
+    <div class="code-block">
+<span class="kw">import</span> numpy <span class="kw">as</span> np<br><br>
+X = np.array([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>], dtype=float)<br>
+y = np.array([<span class="num">2</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>], dtype=float)<br>
+theta, alpha = <span class="num">0.0</span>, <span class="num">0.01</span><br><br>
+<span class="kw">for</span> epoch <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;idx = np.random.<span class="fn">permutation</span>(len(X))  <span class="cm"># shuffle</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for</span> i <span class="kw">in</span> idx:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xi, yi = X[i], y[i]             <span class="cm"># single sample</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grad  = (theta*xi - yi) * xi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;theta = theta - alpha * grad<br><br>
+<span class="kw">print</span>(<span class="str">f"θ = {theta:.4f}"</span>)
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="metric-card"><div class="metric-label">samples per update</div><div class="metric-val" style="color:#993C1D;">1</div></div>
+    <div class="metric-card"><div class="metric-label">gradient noise</div><div class="metric-val" style="color:#993C1D;">high</div></div>
+    <div class="metric-card"><div class="metric-label">convergence</div><div class="metric-val" style="color:#993C1D;">fast, noisy</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ COMPARE ════════════════════════ -->
+<div id="tab-compare" class="hidden">
+  <div class="section">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>property</th>
+          <th><span style="color:#185FA5;">batch GD</span></th>
+          <th><span style="color:#0F6E56;">mini-batch GD</span></th>
+          <th><span style="color:#993C1D;">stochastic GD</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>samples per update</td><td>all m</td><td>k samples</td><td>1 sample</td></tr>
+        <tr><td>gradient quality</td><td>exact</td><td>approximation</td><td>very noisy</td></tr>
+        <tr><td>updates per epoch</td><td>1</td><td>m/k</td><td>m</td></tr>
+        <tr><td>memory</td><td>entire dataset</td><td>k samples</td><td>1 sample</td></tr>
+        <tr><td>convergence path</td><td>smooth, monotonic</td><td>slight zigzag</td><td>noisy zigzag</td></tr>
+        <tr><td>speed per epoch</td><td>slow (large data)</td><td>fast</td><td>fastest</td></tr>
+        <tr><td>can escape local minima</td><td>no</td><td>sometimes</td><td>yes (noise helps)</td></tr>
+        <tr><td>parallelisable on GPU</td><td>yes</td><td>yes (best fit)</td><td>poor</td></tr>
+        <tr><td>used in practice</td><td>small datasets</td><td>almost always</td><td>online learning</td></tr>
+        <tr><td>typical batch_size</td><td>m (all)</td><td>32 / 64 / 128 / 256</td><td>1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="label" style="margin-bottom:8px;">loss surface path visualisation</div>
+    <canvas id="pathChart" height="180"></canvas>
+  </div>
+
+  <div class="section">
+    <div class="label" style="margin-bottom:4px;">the unified view — they are all the same algorithm</div>
+    <div class="math-box">
+      batch_size = m      →  Batch GD<br>
+      batch_size = 1      →  Stochastic GD<br>
+      1 &lt; batch_size &lt; m  →  Mini-Batch GD  ← what PyTorch/TF use by default
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SIMULATION ═══════════════════════ -->
+<div id="tab-sim" class="hidden">
+  <div class="section">
+    <div class="label">tune the parameters and watch loss converge</div>
+    <div class="slider-row">
+      <label>learning rate α</label>
+      <input type="range" min="1" max="20" value="5" step="1" id="lr-slider" style="flex:1;">
+      <span id="lr-val">0.005</span>
+    </div>
+    <div class="slider-row">
+      <label>epochs</label>
+      <input type="range" min="10" max="200" value="50" step="10" id="ep-slider" style="flex:1;">
+      <span id="ep-val">50</span>
+    </div>
+    <button class="run-btn" onclick="runSim()">Run all three</button>
+    <div class="loss-display" id="loss-display"></div>
+  </div>
+  <div style="position: relative; width: 100%; height: 240px;">
+    <canvas id="simChart"></canvas>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function showTab(name, el) {
+  ['batch','mini','sgd','compare','sim'].forEach(t => {
+    document.getElementById('tab-'+t).classList.add('hidden');
+  });
+  document.getElementById('tab-'+name).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(b => {
+    b.className = 'tab';
+  });
+  el.className = 'tab active-' + (name === 'compare' || name === 'sim' ? 'batch' : name);
+  if (name === 'compare') drawPathChart();
+  if (name === 'sim') runSim();
+}
+
+function drawPathChart() {
+  const ctx = document.getElementById('pathChart');
+  if (!ctx) return;
+  if (ctx._chart) ctx._chart.destroy();
+  const batchPts = [{x:0,y:18},{x:0.2,y:12},{x:0.5,y:7},{x:0.7,y:4},{x:0.85,y:2},{x:0.92,y:1.1},{x:0.95,y:0.7}];
+  const miniPts  = [{x:0,y:18},{x:0.15,y:11},{x:0.4,y:7.5},{x:0.55,y:5},{x:0.65,y:3.2},{x:0.78,y:2.1},{x:0.88,y:1.2},{x:0.93,y:0.7}];
+  const sgdPts   = [{x:0,y:18},{x:0.1,y:13},{x:0.18,y:9},{x:0.3,y:11},{x:0.4,y:7},{x:0.5,y:9},{x:0.6,y:5},{x:0.7,y:7},{x:0.8,y:4},{x:0.88,y:5},{x:0.93,y:2.5},{x:0.97,y:1.5}];
+  ctx._chart = new Chart(ctx, {
+    type:'scatter',
+    data: {
+      datasets: [
+        {label:'Batch GD', data:batchPts, showLine:true, borderColor:'#185FA5', backgroundColor:'#185FA5', pointRadius:3, borderWidth:2, tension:0.3},
+        {label:'Mini-Batch GD', data:miniPts, showLine:true, borderColor:'#1D9E75', backgroundColor:'#1D9E75', pointRadius:3, borderWidth:2, tension:0.3},
+        {label:'SGD', data:sgdPts, showLine:true, borderColor:'#D85A30', backgroundColor:'#D85A30', pointRadius:3, borderWidth:2, tension:0.3},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{title:{display:true,text:'iterations (normalised)',font:{size:11}},min:0,max:1,ticks:{font:{size:11}}},
+        y:{title:{display:true,text:'loss',font:{size:11}},min:0,ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+const X=[1,2,3,4,5,6], y=[2,4,5,4,5,6];
+function mse(th){let s=0;for(let i=0;i<X.length;i++)s+=(th*X[i]-y[i])**2;return s/X.length;}
+
+function runBatch(alpha,epochs){
+  let th=0, losses=[];
+  for(let e=0;e<epochs;e++){let g=0;for(let i=0;i<X.length;i++)g+=(th*X[i]-y[i])*X[i];g/=X.length;th-=alpha*g;losses.push(parseFloat(mse(th).toFixed(4)));}
+  return {losses, theta:th};
+}
+function runMini(alpha,epochs,bs=2){
+  let th=0, losses=[];
+  for(let e=0;e<epochs;e++){
+    let idx=[...Array(X.length).keys()].sort(()=>Math.random()-0.5);
+    for(let i=0;i<X.length;i+=bs){let g=0,cnt=0;for(let j=i;j<Math.min(i+bs,X.length);j++){g+=(th*X[idx[j]]-y[idx[j]])*X[idx[j]];cnt++;}th-=alpha*g/cnt;}
+    losses.push(parseFloat(mse(th).toFixed(4)));
+  }
+  return {losses, theta:th};
+}
+function runSGD(alpha,epochs){
+  let th=0, losses=[];
+  for(let e=0;e<epochs;e++){
+    let idx=[...Array(X.length).keys()].sort(()=>Math.random()-0.5);
+    for(let i of idx){let g=(th*X[i]-y[i])*X[i];th-=alpha*g;}
+    losses.push(parseFloat(mse(th).toFixed(4)));
+  }
+  return {losses, theta:th};
+}
+
+let simChart=null;
+function runSim(){
+  const alpha = parseFloat(document.getElementById('lr-slider').value)/1000;
+  const epochs = parseInt(document.getElementById('ep-slider').value);
+  document.getElementById('lr-val').textContent = alpha.toFixed(3);
+  document.getElementById('ep-val').textContent = epochs;
+
+  const b = runBatch(alpha, epochs);
+  const m2 = runMini(alpha, epochs);
+  const s = runSGD(alpha, epochs);
+  const labels = [...Array(epochs).keys()].map(i=>i+1);
+
+  document.getElementById('loss-display').innerHTML =
+    'final θ — <span class="loss-val" style="color:#185FA5">batch: '+b.theta.toFixed(4)+'</span> · '+
+    '<span class="loss-val" style="color:#1D9E75">mini: '+m2.theta.toFixed(4)+'</span> · '+
+    '<span class="loss-val" style="color:#D85A30">sgd: '+s.theta.toFixed(4)+'</span>';
+
+  const ctx = document.getElementById('simChart');
+  if (simChart) simChart.destroy();
+  simChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Batch GD', data:b.losses, borderColor:'#185FA5', backgroundColor:'transparent', pointRadius:0, borderWidth:2},
+        {label:'Mini-Batch GD', data:m2.losses, borderColor:'#1D9E75', backgroundColor:'transparent', pointRadius:0, borderWidth:2},
+        {label:'SGD', data:s.losses, borderColor:'#D85A30', backgroundColor:'transparent', pointRadius:0, borderWidth:1.5},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      animation:{duration:400},
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{title:{display:true,text:'epoch',font:{size:11}},ticks:{maxTicksLimit:10,font:{size:11}}},
+        y:{title:{display:true,text:'MSE loss',font:{size:11}},ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+document.getElementById('lr-slider').addEventListener('input', function(){
+  document.getElementById('lr-val').textContent = (this.value/1000).toFixed(3);
+});
+document.getElementById('ep-slider').addEventListener('input', function(){
+  document.getElementById('ep-val').textContent = this.value;
+});
+</script>

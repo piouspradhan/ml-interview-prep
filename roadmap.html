@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Machine Learning Interview Roadmap Tracker</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --border: #e5e7eb;
+      --done: #16a34a;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 36px 20px;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 2rem; }
+    h2 { margin-top: 0; }
+    h3 { margin: 24px 0 10px; }
+    .subtitle { margin: 0; color: #dbeafe; }
+    .meta { margin-top: 14px; font-size: .95rem; color: #dbeafe; }
+    main { padding: 24px 20px 56px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .05);
+      margin-bottom: 18px;
+    }
+    .progress-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .progress {
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar { height: 100%; width: 0%; background: var(--done); transition: width .2s ease; }
+    .small { font-size: .9rem; color: var(--muted); }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+    button {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: var(--primary-dark); }
+    button.secondary { background: #475569; }
+    button.danger { background: #dc2626; }
+    details { margin: 12px 0; }
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .task-list { list-style: none; padding: 0; margin: 12px 0 0; }
+    .task-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+    .task-list li:last-child { border-bottom: none; }
+    input[type="checkbox"] { margin-top: 4px; transform: scale(1.15); accent-color: var(--done); }
+    textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font: inherit;
+      background: #fff;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: .82rem;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .day-title { font-weight: 700; }
+    footer { color: var(--muted); font-size: .9rem; margin-top: 22px; }
+    @media print {
+      button, .toolbar { display: none; }
+      body { background: white; }
+      .card { box-shadow: none; break-inside: avoid; }
+      details { page-break-inside: avoid; }
+      details:not([open]) > *:not(summary) { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Machine Learning Interview Roadmap Tracker</h1>
+      <p class="subtitle">Based only on the roadmap from iamarunbrahma/machine-learning-interview.</p>
+      <p class="meta">Track DSA, ML system design, ML coding, ML concepts, DL, NLP, CV, RecSys, LLMs, RAG, Agentic AI, projects, and the 30-day plan.</p>
+      <div class="toolbar">
+        <button onclick="expandAll()">Expand all</button>
+        <button class="secondary" onclick="collapseAll()">Collapse all</button>
+        <button class="danger" onclick="resetProgress()">Reset progress</button>
+        <button onclick="window.print()">Print / Save as PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="progress-row">
+        <h2>Overall Progress</h2>
+        <strong id="overallText">0%</strong>
+      </div>
+      <div class="progress"><div id="overallBar" class="bar"></div></div>
+      <p class="small" id="overallCount">0 of 0 tasks complete</p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Interview Areas</h2>
+        <span class="pill">Coding</span><span class="pill">ML Breadth</span><span class="pill">System Design</span><span class="pill">Behavioral</span>
+        <p class="small">For both Big Tech and startups, prepare coding, ML concepts, system design, behavioral, and 2–3 projects you can whiteboard end-to-end.</p>
+      </div>
+      <div class="card">
+        <h2>Daily Deliverables</h2>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>2–4 LeetCode problems, pattern-aligned</label></li>
+          <li><input type="checkbox" data-task><label>5–10 lines of notes</label></li>
+          <li><input type="checkbox" data-task><label>1 case-study bullet takeaway on system-design days</label></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Core Roadmap Checklist</h2>
+      <details open>
+        <summary>Coding (DSA)</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Practice LeetCode with ~55% Medium, ~35% Easy, ~10–15% Hard</label></li>
+          <li><input type="checkbox" data-task><label>Study pattern-based prep: arrays, two pointers, sliding window, hashing, stacks/queues, binary search, trees, graphs, DP</label></li>
+          <li><input type="checkbox" data-task><label>Rehearse core Medium problems 2–3 times for speed and pattern recognition</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>ML System Design</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Start every design with business goals and success metrics</label></li>
+          <li><input type="checkbox" data-task><label>Walk through data → features → training → evaluation → serving → monitoring</label></li>
+          <li><input type="checkbox" data-task><label>Make trade-offs, failure modes, latency, throughput, and monitoring explicit</label></li>
+          <li><input type="checkbox" data-task><label>Read ML system design primers/frameworks</label></li>
+          <li><input type="checkbox" data-task><label>Study case studies and production lessons</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>ML Coding: From Scratch + Libraries</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Implement linear regression from scratch</label></li>
+          <li><input type="checkbox" data-task><label>Implement logistic regression from scratch</label></li>
+          <li><input type="checkbox" data-task><label>Implement k-means from scratch</label></li>
+          <li><input type="checkbox" data-task><label>Implement k-NN from scratch</label></li>
+          <li><input type="checkbox" data-task><label>Implement decision trees from scratch</label></li>
+          <li><input type="checkbox" data-task><label>Implement a basic neural network from scratch</label></li>
+          <li><input type="checkbox" data-task><label>Practice fast prototyping with scikit-learn</label></li>
+          <li><input type="checkbox" data-task><label>Practice fast prototyping with PyTorch and/or TensorFlow</label></li>
+          <li><input type="checkbox" data-task><label>Discuss bias/variance, data constraints, feature constraints, compute, and latency for each model</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>ML Concepts</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Bias–variance trade-off</label></li>
+          <li><input type="checkbox" data-task><label>Regularization</label></li>
+          <li><input type="checkbox" data-task><label>Cross-validation</label></li>
+          <li><input type="checkbox" data-task><label>Model selection</label></li>
+          <li><input type="checkbox" data-task><label>Calibration</label></li>
+          <li><input type="checkbox" data-task><label>Class imbalance</label></li>
+          <li><input type="checkbox" data-task><label>Drift</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Deep Learning</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Review deep learning question banks and notes</label></li>
+          <li><input type="checkbox" data-task><label>Activation functions</label></li>
+          <li><input type="checkbox" data-task><label>Loss functions</label></li>
+          <li><input type="checkbox" data-task><label>Backpropagation</label></li>
+          <li><input type="checkbox" data-task><label>Optimization basics</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>NLP</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Tokenization</label></li>
+          <li><input type="checkbox" data-task><label>TF-IDF</label></li>
+          <li><input type="checkbox" data-task><label>Sequence models</label></li>
+          <li><input type="checkbox" data-task><label>Attention</label></li>
+          <li><input type="checkbox" data-task><label>Practice NLP interview questions</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Computer Vision</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Edges</label></li>
+          <li><input type="checkbox" data-task><label>HOG</label></li>
+          <li><input type="checkbox" data-task><label>CNNs</label></li>
+          <li><input type="checkbox" data-task><label>Practice CV interview questions</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Recommender Systems</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Collaborative filtering</label></li>
+          <li><input type="checkbox" data-task><label>Content-based filtering</label></li>
+          <li><input type="checkbox" data-task><label>Hybrid recommender systems</label></li>
+          <li><input type="checkbox" data-task><label>Matrix factorization / SVD</label></li>
+          <li><input type="checkbox" data-task><label>Implicit feedback</label></li>
+          <li><input type="checkbox" data-task><label>Cold start</label></li>
+          <li><input type="checkbox" data-task><label>Evaluation: MAP, NDCG, AUC, online metrics</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Generative AI, LLMs, RAG, Agentic AI</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>LLM interview questions</label></li>
+          <li><input type="checkbox" data-task><label>Tokenization and embeddings</label></li>
+          <li><input type="checkbox" data-task><label>LLM evaluation basics</label></li>
+          <li><input type="checkbox" data-task><label>RAG basics: chunking and vector DB</label></li>
+          <li><input type="checkbox" data-task><label>RAG curated lists</label></li>
+          <li><input type="checkbox" data-task><label>Agentic patterns: tools, planning, multi-step autonomy</label></li>
+          <li><input type="checkbox" data-task><label>Monitoring hallucinations</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Projects + Behavioral</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label>Prepare 2–3 projects to whiteboard end-to-end</label></li>
+          <li><input type="checkbox" data-task><label>Build/demo 1–2 small end-to-end projects: ranking, anomaly detection, or simple RAG chatbot</label></li>
+          <li><input type="checkbox" data-task><label>For each project: clear problem definition and success metrics</label></li>
+          <li><input type="checkbox" data-task><label>For each project: clean feature pipeline with point-in-time correctness</label></li>
+          <li><input type="checkbox" data-task><label>For each project: offline evaluation and simple online plan</label></li>
+          <li><input type="checkbox" data-task><label>For each project: lightweight serving stub and monitoring checklist</label></li>
+          <li><input type="checkbox" data-task><label>Create STAR stories x6 with metrics/impact framing</label></li>
+          <li><input type="checkbox" data-task><label>Keep a personal wins and failures log</label></li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>30-Day Preparation Plan</h2>
+      <p class="small">Format: 6 days/week + 1 lighter buffer/review day. Each day ~2–4 hours. Mix DSA, ML concepts/coding, system design, and one domain.</p>
+
+      <details open>
+        <summary>Week 1 — Foundations + Patterns</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 1:</span> DSA arrays/two-pointers; ML concepts: bias–variance, over/underfitting; Domain: DL basics; Read: ML system design intro</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 2:</span> DSA sliding window; ML coding: linear/logistic regression from scratch; Domain: NLP basics</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 3:</span> DSA hashing; ML concepts: regularization, calibration, class imbalance; Domain: CV basics</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 4:</span> DSA stacks/queues; System design: metrics, goals, constraints; Case study skim</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 5:</span> DSA binary search; ML coding: k-NN, k-means; Domain: RecSys paradigms</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 6:</span> Timed practice session: 30m coding + 30m ML breadth; review weak spots</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 7:</span> Light buffer: 1–2 LeetCode mediums</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Week 2 — Graphs + System Design</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 8:</span> DSA BFS/DFS; ML concepts: CV/holdout/K-fold; Domain: LLM basics</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 9:</span> DSA trees/BST; System design: data pipeline, features, training; Case study: ranking/search</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 10:</span> DSA heaps/priority queues; ML coding: decision trees; Domain: CV CNNs</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 11:</span> DSA intervals/greedy; System design: serving, latency/throughput/SLO; monitoring</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 12:</span> DSA backtracking; Domain: NLP sequence models, attention; LLM evaluation basics</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 13:</span> System design scenario drill, 45m; review</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 14:</span> Light buffer: 1 domain deep-dive reading + 1 LC medium</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Week 3 — Optimization + Domain Rotations</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 15:</span> DSA graph shortest paths; ML metrics: PR/ROC/AUC/NDCG/MAP; Domain: RecSys MF/SVD</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 16:</span> DSA union-find; System design: offline vs online eval, A/B, bandits</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 17:</span> ML coding: PyTorch quickstart; Domain: LLM RAG basics</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 18:</span> DSA practice set: 4 mediums; Domain: Agentic patterns; monitoring hallucinations</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 19:</span> Project polish: small E2E demo; prepare talking points</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 20:</span> Integrated timed session: coding + ML breadth; review</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 21:</span> Light buffer: review errors log + 1 LC hard attempt</label></li>
+        </ul>
+      </details>
+
+      <details>
+        <summary>Week 4 — Polish + Drills</summary>
+        <ul class="task-list">
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 22:</span> System design dry runs; scan GenAI/LLM case studies</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 23:</span> DSA mixed timed set: 3 mediums; ML coding: pipeline hygiene</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 24:</span> Domain deep dive 1: DL or NLP; summarize 5 Q/A</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 25:</span> Domain deep dive 2: CV or RecSys; summarize 5 Q/A</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 26:</span> Domain deep dive 3: LLM/RAG/Agentic; summarize 5 Q/A</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 27:</span> Full-cycle dry run: coding + system design; review</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 28:</span> Behavioral prep: STAR stories x6; metrics/impact framing</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 29:</span> Final gaps: error log pass + 2 mediums; sleep routine</label></li>
+          <li><input type="checkbox" data-task><label><span class="day-title">Day 30:</span> Light review only; logistics; hydrate + rest</label></li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Personal Notes</h2>
+      <label class="small" for="notes">Use this for weak spots, mistakes, project talking points, wins/failures, and interview reflections.</label>
+      <textarea id="notes" placeholder="Example: Need to revise calibration, PR-AUC, and online vs offline evaluation..."></textarea>
+    </section>
+
+    <footer>
+      Source roadmap: https://github.com/iamarunbrahma/machine-learning-interview<br>
+      Progress is saved in this browser using localStorage. Keep the same file name/location for best tracking continuity.
+    </footer>
+  </main>
+
+  <script>
+    const storageKey = 'ml-interview-roadmap-tracker-v1';
+    const notesKey = 'ml-interview-roadmap-notes-v1';
+    const boxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-task]'));
+    const notes = document.getElementById('notes');
+
+    function loadProgress() {
+      const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      boxes.forEach((box, i) => {
+        box.checked = !!saved[i];
+        box.addEventListener('change', saveProgress);
+      });
+      notes.value = localStorage.getItem(notesKey) || '';
+      notes.addEventListener('input', () => localStorage.setItem(notesKey, notes.value));
+      updateProgress();
+    }
+
+    function saveProgress() {
+      const data = {};
+      boxes.forEach((box, i) => data[i] = box.checked);
+      localStorage.setItem(storageKey, JSON.stringify(data));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = boxes.length;
+      const done = boxes.filter(b => b.checked).length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      document.getElementById('overallText').textContent = pct + '%';
+      document.getElementById('overallCount').textContent = `${done} of ${total} tasks complete`;
+      document.getElementById('overallBar').style.width = pct + '%';
+    }
+
+    function resetProgress() {
+      if (!confirm('Reset all checkbox progress and notes?')) return;
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(notesKey);
+      boxes.forEach(b => b.checked = false);
+      notes.value = '';
+      updateProgress();
+    }
+
+    function expandAll() { document.querySelectorAll('details').forEach(d => d.open = true); }
+    function collapseAll() { document.querySelectorAll('details').forEach(d => d.open = false); }
+
+    loadProgress();
+  </script>
+</body>
+</html>
